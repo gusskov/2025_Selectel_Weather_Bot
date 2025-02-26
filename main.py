@@ -3,8 +3,19 @@ import requests
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
-
 from aiogram.filters import Command
+from dotenv import load_dotenv
+
+# Загружаем переменные из .env
+load_dotenv()
+
+# Берем токены из переменных окружения
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+GEONAMES_USERNAME = os.getenv("GEONAMES_USERNAME")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
 
 
 def transliterate_city(city_name: str) -> str:
