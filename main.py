@@ -2,7 +2,7 @@ import os
 import requests
 import asyncio
 
-import translit
+from transliterate import translit
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
@@ -76,23 +76,26 @@ async def get_weather(message: Message):
 
 def get_similar_city_names(city):
     url = "http://api.geonames.org/searchJSON"
-    params = {
-        "q": city,
-        "maxRows": 5,
-        "username": GEONAMES_USERNAME
-        ##"lang": "ru",
-        ##"fclass": "P"  # Искать только населенные пункты
-    }
-    response = requests.get(url, params=params)
-    response = get_city_data(city)  # Запрос к API
-    if not response['geonames']:  # Если пусто, пробуем транслитерацию
-        city_translit = transliterate_city(city)
-        response = get_city_data(city_translit)
 
-    data = response.json()
-    print(data)
-    if "geonames" in data:
-        return [f"{item['name']} ({item['countryName']})" for item in data["geonames"]]
+    # Пробуем сначала оригинальное название, потом транслитерацию
+    possible_cities = [city, transliterate_city(city)]
+
+    for city_variant in possible_cities:
+        params = {
+            "q": city_variant,
+            "maxRows": 5,
+            "username": GEONAMES_USERNAME
+        }
+
+        response = requests.get(url, params=params)
+
+        if response.status_code == 200:
+            data = response.json()
+            print(data)  # Для отладки
+
+            if "geonames" in data and data["geonames"]:
+                return [f"{item['name']} ({item['countryName']})" for item in data["geonames"]]
+
     return []
 
 
