@@ -1,6 +1,8 @@
 import os
 import requests
 import asyncio
+
+import translit
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
@@ -20,13 +22,6 @@ dp = Dispatcher()
 
 def transliterate_city(city_name: str) -> str:
     return translit(city_name, 'ru', reversed=True)  # Транслитерация с русского на английский
-
-# Замените на ваш API-ключ OpenWeather
-WEATHER_API_KEY = "ea9030b8737d1eee50490137ab901546"
-GEONAMES_USERNAME = "gusskov"  # Укажите ваш логин Geonames
-
-bot = Bot(token="7776585087:AAE32dsoo1nd8SeFGCl_lzbOQhf_jrNapsw")
-dp = Dispatcher()  # Создаем Dispatcher без аргументов
 
 
 @dp.message(Command("start"))
